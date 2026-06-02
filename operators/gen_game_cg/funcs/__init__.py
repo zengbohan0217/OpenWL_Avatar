@@ -1,7 +1,7 @@
 """
-gen_game_cg/funcs — decoupled functional modules for the game CG generation pipeline.
+gen_game_cg/funcs — decoupled functional modules for game CG generation.
 
-  - gen_storyboard.py  : generate storyboard / shot design from script
-  - gen_cg_video.py    : generate CG video clips per shot
-  - compose_cg.py      : compose shots into a final CG sequence
+  - gen_storyboard.py       : load / generate storyboard {video_prompt, shots}
+  - gen_storyboard_image.py : per-shot keyframe images (QwenEdit)
+  - gen_cg_video.py         : one LTX call, all shot images as keyframes
 """

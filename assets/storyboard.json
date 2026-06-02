@@ -1,30 +1,23 @@
-[
-    {
-        "group_id": 0,
-        "shots": [
-            {
-                "shot_id": 0,
-                "description": "Wide shot: straw hat pirate stands at the bow in a storm.",
-                "video_prompt": "Fixed camera, wide shot. A straw hat pirate stands at the ship's bow, storm raging, lightning in the background, dramatic cinematic lighting, game-quality render.",
-                "duration_sec": 5.0
-            }
-        ]
-    },
-    {
-        "group_id": 1,
-        "shots": [
-            {
-                "shot_id": 1,
-                "description": "Close-up: pirate charges his rubber gear attack.",
-                "video_prompt": "Close-up. A rubber-powered pirate's fist glows red with energy, gear second steam rising, dramatic slow motion, particle effects, AAA game visual style.",
-                "duration_sec": 4.0
-            },
-            {
-                "shot_id": 2,
-                "description": "Wide shot: massive punch shatters the enemy ship's mast.",
-                "video_prompt": "Wide shot. A powerful fist slams into a wooden ship mast, the mast exploding in splinters, shockwave ripples outward, slow motion, cinematic game CG.",
-                "duration_sec": 5.0
-            }
-        ]
-    }
-]
+{
+    "video_prompt": "Generate a cinematic AAA game CG. The camera starts with a wide establishing shot from far away, then quickly pushes in to the front of the character. Next, the character charges up and throws a punch, striking a ship in the distance.",
+    "shots": [
+        {
+            "shot_id": 0,
+            "description": "Wide shot: straw hat pirate stands at the bow in a storm.",
+            "image_prompt": "Wide shot from far away. A straw hat pirate stands at a ship's bow, storm raging, lightning, dramatic cinematic lighting, AAA game render.",
+            "duration_sec": 4.0
+        },
+        {
+            "shot_id": 1,
+            "description": "Medium shot: pirate charges his rubber gear attack.",
+            "image_prompt": "Medium shot. The pirate's fist glows red, gear-second steam rising, dramatic lighting, particle effects, AAA game visual style.",
+            "duration_sec": 4.0
+        },
+        {
+            "shot_id": 2,
+            "description": "Close-up: massive punch shatters the enemy ship's mast.",
+            "image_prompt": "Close-up. A powerful glowing fist slams into a wooden ship mast, splinters exploding outward, shockwave ripples, slow motion, cinematic game CG.",
+            "duration_sec": 4.0
+        }
+    ]
+}
