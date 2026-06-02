@@ -16,6 +16,7 @@ Typical usage:
 
 from models.gen_image.qwen_edit import QwenEditModel
 from models.gen_3d.trellis import TrellisModel
+from models.tools.depth_anything import DepthAnythingModel
 from operators.gen_ue_avatar.funcs.gen_tpose import gen_tpose
 from operators.gen_ue_avatar.funcs.gen_3d_avatar import gen_3d_avatar
 from operators.gen_ue_avatar.funcs.gen_motion import detect_skeleton, gen_motion
@@ -35,16 +36,32 @@ class UEAvatarOperator:
                  }
         """
         self.cfg = cfg
-        self.gen_image_model = QwenEditModel(cfg["gen_image_model"], device=cfg.get("device", "cuda"))
-        self.gen_3d_model = TrellisModel(cfg["gen_3d_model"], device=cfg.get("device", "cuda"))
+        device = cfg.get("device", "cuda")
+        self.gen_image_model = QwenEditModel(cfg["gen_image_model"], device=device)
+        self.gen_3d_model = TrellisModel(cfg["gen_3d_model"], device=device)
+        # Optional: depth model for T-pose foreground extraction.
+        depth_path = cfg.get("depth_model")
+        self.depth_model = (
+            DepthAnythingModel(depth_path, device=device) if depth_path else None
+        )
 
     # ------------------------------------------------------------------
     # Pipeline steps (thin wrappers that call funcs/)
     # ------------------------------------------------------------------
 
-    def gen_tpose(self, ref_image, description: str = ""):
-        """Step 1: Generate T-pose RGBA image."""
-        return gen_tpose(ref_image, description, self.gen_image_model)
+    def gen_tpose(self, ref_image, description: str = "", **kwargs):
+        """Step 1: Generate T-pose RGBA image.
+
+        Extra kwargs (seed, steps, target_size, return_intermediate, ...) are
+        forwarded to `funcs.gen_tpose.gen_tpose`.
+        """
+        return gen_tpose(
+            ref_image,
+            description,
+            gen_model=self.gen_image_model,
+            depth_model=self.depth_model,
+            **kwargs,
+        )
 
     def gen_3d_avatar(self, tpose_image):
         """Step 2: Lift T-pose image to 3D avatar mesh."""

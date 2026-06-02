@@ -9,7 +9,8 @@ codes/
 │   ├── gen_image/       # 图像生成（Qwen-Image-Edit 等）
 │   ├── gen_3d/          # 3D 生成（Trellis 等）
 │   ├── gen_video/       # 视频生成（HunyuanVideo 等）
-│   └── reasoning/       # 视觉语言模型（Qwen-VL 等）
+│   ├── reasoning/       # 视觉语言模型（Qwen-VL 等）
+│   └── tools/           # 工具类模型（DepthAnything、分割、去背景等，统一 BaseToolModel）
 ├── operators/           # 流水线 operator（加载 models，调用 funcs）
 │   ├── gen_ue_avatar/   # UE avatar 生成流水线（纯 AI 推理）
 │   │   ├── operator.py  # UEAvatarOperator

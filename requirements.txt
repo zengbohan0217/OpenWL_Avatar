@@ -1,0 +1,8 @@
+torch
+torchvision
+diffusers>=0.30.0
+transformers>=4.45.0
+accelerate
+Pillow
+numpy
+scipy
