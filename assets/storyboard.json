@@ -5,19 +5,25 @@
             "shot_id": 0,
             "description": "Wide shot: straw hat pirate stands at the bow in a storm.",
             "image_prompt": "Wide shot from far away. A straw hat pirate stands at a ship's bow, storm raging, lightning, dramatic cinematic lighting, AAA game render.",
-            "duration_sec": 4.0
+            "duration_sec": 4.0,
+            "ref": "original",
+            "strength": 0.9
         },
         {
             "shot_id": 1,
             "description": "Medium shot: pirate charges his rubber gear attack.",
             "image_prompt": "Medium shot. The pirate's fist glows red, gear-second steam rising, dramatic lighting, particle effects, AAA game visual style.",
-            "duration_sec": 4.0
+            "duration_sec": 4.0,
+            "ref": "original",
+            "strength": 0.9
         },
         {
             "shot_id": 2,
             "description": "Close-up: massive punch shatters the enemy ship's mast.",
             "image_prompt": "Close-up. A powerful glowing fist slams into a wooden ship mast, splinters exploding outward, shockwave ripples, slow motion, cinematic game CG.",
-            "duration_sec": 4.0
+            "duration_sec": 4.0,
+            "ref": "previous",
+            "strength": 0.9
         }
     ]
 }

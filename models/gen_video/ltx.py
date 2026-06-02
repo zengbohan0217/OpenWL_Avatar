@@ -5,6 +5,11 @@ Only one public method: `generate()`. It takes a prompt, a list of
 ImageConditioningInput keyframes, and writes one mp4. All higher-level
 logic (storyboard parsing, frame index layout, etc.) lives in
 operators/gen_game_cg/funcs.
+
+VRAM tips:
+  - offload="cpu" pushes idle weights to CPU between stages.
+  - quantization="fp8-cast" or "fp8-scaled-mm" cuts VRAM roughly in half.
+  - Set env  PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True  before launch.
 """
 
 from pathlib import Path
@@ -14,6 +19,7 @@ import torch
 
 from ltx_core.loader import LTXV_LORA_COMFY_RENAMING_MAP, LoraPathStrengthAndSDOps
 from ltx_core.model.video_vae import TilingConfig, get_video_chunks_number
+from ltx_core.quantization import QuantizationPolicy
 from ltx_pipelines.keyframe_interpolation import KeyframeInterpolationPipeline
 from ltx_pipelines.utils.args import ImageConditioningInput
 from ltx_pipelines.utils.constants import DEFAULT_NEGATIVE_PROMPT, LTX_2_3_PARAMS
@@ -24,7 +30,9 @@ _CHECKPOINT   = "ltx-2.3-22b-dev.safetensors"
 _DISTILL_LORA = "ltx-2.3-22b-distilled-lora-384-1.1.safetensors"
 _UPSAMPLER    = "ltx-2.3-spatial-upscaler-x2-1.1.safetensors"
 
-DEFAULT_FPS = 24.0
+DEFAULT_FPS = LTX_2_3_PARAMS.frame_rate
+DEFAULT_HEIGHT = LTX_2_3_PARAMS.stage_2_height
+DEFAULT_WIDTH  = LTX_2_3_PARAMS.stage_2_width
 
 
 def snap_frames(n: int) -> int:
@@ -37,27 +45,43 @@ def _make_distilled_lora(path: str, strength: float = 0.8):
     return [LoraPathStrengthAndSDOps(path, strength, LTXV_LORA_COMFY_RENAMING_MAP)]
 
 
+def _resolve_quantization(name: Optional[str], checkpoint_path: str):
+    if name is None or name == "none":
+        return None
+    if name == "fp8-cast":
+        return QuantizationPolicy.fp8_cast()
+    if name == "fp8-scaled-mm":
+        return QuantizationPolicy.fp8_scaled_mm(checkpoint_path)
+    raise ValueError(f"Unknown quantization: {name}")
+
+
 class LTXModel:
-    """Minimal wrapper around LTX-2.3 KeyframeInterpolationPipeline."""
+    """Minimal wrapper around LTX-2.3 KeyframeInterpolationPipeline (lazy loaded)."""
 
     def __init__(self, ltx_root: str, gemma_root: str,
-                 device: str = "cuda", offload: str = "none"):
-        self.ltx_root   = Path(ltx_root)
-        self.gemma_root = gemma_root
-        self.offload    = OffloadMode(offload)
-        self._pipe      = None
+                 device: str = "cuda",
+                 offload: str = "none",
+                 quantization: Optional[str] = None):
+        self.ltx_root     = Path(ltx_root)
+        self.gemma_root   = gemma_root
+        self.offload      = OffloadMode(offload)
+        self.quantization = quantization
+        self._pipe        = None
 
     def _load(self):
-        if self._pipe is None:
-            root = self.ltx_root
-            self._pipe = KeyframeInterpolationPipeline(
-                checkpoint_path        = str(root / _CHECKPOINT),
-                distilled_lora         = _make_distilled_lora(str(root / _DISTILL_LORA)),
-                spatial_upsampler_path = str(root / _UPSAMPLER),
-                gemma_root             = self.gemma_root,
-                loras                  = [],
-                offload_mode           = self.offload,
-            )
+        if self._pipe is not None:
+            return
+        root = self.ltx_root
+        checkpoint = str(root / _CHECKPOINT)
+        self._pipe = KeyframeInterpolationPipeline(
+            checkpoint_path        = checkpoint,
+            distilled_lora         = _make_distilled_lora(str(root / _DISTILL_LORA)),
+            spatial_upsampler_path = str(root / _UPSAMPLER),
+            gemma_root             = self.gemma_root,
+            loras                  = [],
+            quantization           = _resolve_quantization(self.quantization, checkpoint),
+            offload_mode           = self.offload,
+        )
 
     @torch.inference_mode()
     def generate(
@@ -67,8 +91,8 @@ class LTXModel:
         num_frames: int,
         output_path: str,
         frame_rate: float = DEFAULT_FPS,
-        height: int = 768,
-        width: int = 1152,
+        height: int = DEFAULT_HEIGHT,
+        width: int = DEFAULT_WIDTH,
         negative_prompt: Optional[str] = None,
         seed: int = 42,
     ) -> str:
