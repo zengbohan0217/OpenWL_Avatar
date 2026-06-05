@@ -1,0 +1,37 @@
+[
+  {
+    "frame": 8,
+    "type": "attack_start",
+    "attach": "foot_r",
+    "metadata": {
+      "label": "kick windup"
+    }
+  },
+  {
+    "frame": 14,
+    "type": "weapon_trail_start",
+    "attach": "foot_r",
+    "vfx": "kick_foot_afterimage"
+  },
+  {
+    "frame": 22,
+    "type": "impact",
+    "position_source": "foot_r",
+    "vfx": "kick_impact_ring",
+    "metadata": {
+      "label": "estimated contact"
+    }
+  },
+  {
+    "frame": 28,
+    "type": "weapon_trail_end",
+    "attach": "foot_r",
+    "vfx": "kick_foot_afterimage"
+  },
+  {
+    "frame": 36,
+    "type": "attack_end",
+    "attach": "root"
+  }
+]
+

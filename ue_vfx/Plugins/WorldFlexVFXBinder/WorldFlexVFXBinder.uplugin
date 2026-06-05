@@ -1,0 +1,28 @@
+{
+  "FileVersion": 3,
+  "Version": 1,
+  "VersionName": "0.1.0",
+  "FriendlyName": "WorldFlex VFX Binder",
+  "Description": "Editor-only tooling for detecting motion-driven VFX events and writing Niagara animation notifies.",
+  "Category": "WorldFlex",
+  "CreatedBy": "WorldFlex",
+  "EnabledByDefault": true,
+  "CanContainContent": false,
+  "Plugins": [
+    {
+      "Name": "Niagara",
+      "Enabled": true
+    },
+    {
+      "Name": "EditorScriptingUtilities",
+      "Enabled": true
+    }
+  ],
+  "Modules": [
+    {
+      "Name": "WorldFlexVFXBinder",
+      "Type": "Editor",
+      "LoadingPhase": "Default"
+    }
+  ]
+}

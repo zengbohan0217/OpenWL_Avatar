@@ -1,0 +1,27 @@
+{
+  "sample_id": "luffi_vfx_test",
+  "role": "vfx_prototype",
+  "asset": {
+    "character_fbx": "D:/assets/luffi_sample/luffi (2).fbx"
+  },
+  "motions": [
+    {
+      "name": "mma_kick",
+      "fbx": "D:/assets/luffi_sample/Mma Kick.fbx",
+      "event_file": "motion/mma_kick.events.json",
+      "vfx_file": "vfx/mma_kick.emitters.json"
+    },
+    {
+      "name": "standing_melee_run_jump_attack",
+      "fbx": "D:/assets/luffi_sample/Standing Melee Run Jump Attack (1)(1).fbx",
+      "event_file": "motion/standing_melee_run_jump_attack.events.json",
+      "vfx_file": "vfx/standing_melee_run_jump_attack.emitters.json"
+    }
+  ],
+  "notes": [
+    "This sample is scoped to the particle/VFX task only.",
+    "Frame numbers are initial guesses and should be corrected after previewing the animation in UE5.",
+    "Socket names are placeholders until the imported skeleton is inspected."
+  ]
+}
+

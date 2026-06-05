@@ -1,0 +1,43 @@
+[
+  {
+    "frame": 6,
+    "type": "attack_start",
+    "attach": "root",
+    "metadata": {
+      "label": "runup starts"
+    }
+  },
+  {
+    "frame": 18,
+    "type": "vfx_spawn",
+    "attach": "root",
+    "vfx": "run_dust"
+  },
+  {
+    "frame": 32,
+    "type": "weapon_trail_start",
+    "attach": "hand_r",
+    "vfx": "jump_attack_hand_trail"
+  },
+  {
+    "frame": 48,
+    "type": "impact",
+    "position_source": "hand_r",
+    "vfx": "jump_attack_ground_impact",
+    "metadata": {
+      "label": "estimated landing/contact"
+    }
+  },
+  {
+    "frame": 56,
+    "type": "weapon_trail_end",
+    "attach": "hand_r",
+    "vfx": "jump_attack_hand_trail"
+  },
+  {
+    "frame": 66,
+    "type": "attack_end",
+    "attach": "root"
+  }
+]
+

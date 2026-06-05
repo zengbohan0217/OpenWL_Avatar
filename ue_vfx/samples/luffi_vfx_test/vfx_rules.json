@@ -1,0 +1,57 @@
+{
+  "version": 1,
+  "track": "WorldFlexVFX",
+  "remove_existing": true,
+  "bindings": [
+    {
+      "anim": "/Game/WorldFlex/LuffiVFXTest/Animations/Mma_Kick.Mma_Kick",
+      "mesh": "/Game/WorldFlex/LuffiVFXTest/Character/luffi__2_.luffi__2_",
+      "events_json": "auto_detect_mma_kick.events.json",
+      "rules": [
+        {
+          "rule": "speed_trail",
+          "bone": "RightFoot",
+          "niagara": "/Game/NiagaraExamples/FX_Footstep/NS_Footstep_Fire.NS_Footstep_Fire",
+          "speed_threshold": 350.0,
+          "min_duration": 0.1
+        },
+        {
+          "rule": "speed_peak_impact",
+          "bone": "RightFoot",
+          "niagara": "/Game/NiagaraExamples/FX_Sparks/NS_Spark_Burst.NS_Spark_Burst",
+          "speed_threshold": 430.0,
+          "offset_after_peak": 0.0
+        }
+      ]
+    },
+    {
+      "anim": "/Game/WorldFlex/LuffiVFXTest/Animations/Standing_Melee_Run_Jump_Attack__1__1_.Standing_Melee_Run_Jump_Attack__1__1_",
+      "mesh": "/Game/WorldFlex/LuffiVFXTest/Character/luffi__2_.luffi__2_",
+      "events_json": "auto_detect_run_jump_attack.events.json",
+      "rules": [
+        {
+          "rule": "run_loop",
+          "bone": "Hips",
+          "niagara": "/Game/NiagaraExamples/FX_Footstep/NS_Footstep_Fire.NS_Footstep_Fire",
+          "speed_threshold": 140.0,
+          "min_duration": 0.25,
+          "horizontal_only": true
+        },
+        {
+          "rule": "speed_trail",
+          "bone": "RightHand",
+          "niagara": "/Game/NiagaraExamples/FX_Player/NS_Player_Electricity_Looping.NS_Player_Electricity_Looping",
+          "speed_threshold": 400.0,
+          "min_duration": 0.12
+        },
+        {
+          "rule": "speed_peak_impact",
+          "bone": "Hips",
+          "niagara": "/Game/NiagaraExamples/FX_Explosions/NS_Explosion_Small.NS_Explosion_Small",
+          "speed_threshold": 250.0,
+          "offset_after_peak": 0.0
+        }
+      ]
+    }
+  ]
+}

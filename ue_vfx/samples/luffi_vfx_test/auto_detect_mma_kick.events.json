@@ -1,0 +1,18 @@
+[
+	{
+		"frame": 17,
+		"time": 0.56666666269302368,
+		"duration": 0.46666663885116577,
+		"type": "Looping",
+		"bone": "RightFoot",
+		"niagara": "/Game/NiagaraExamples/FX_Footstep/NS_Footstep_Fire.NS_Footstep_Fire"
+	},
+	{
+		"frame": 28,
+		"time": 0.93333327770233154,
+		"duration": 0,
+		"type": "Impact",
+		"bone": "RightFoot",
+		"niagara": "/Game/NiagaraExamples/FX_Sparks/NS_Spark_Burst.NS_Spark_Burst"
+	}
+]

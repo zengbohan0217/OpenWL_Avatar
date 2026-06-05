@@ -1,0 +1,57 @@
+[
+  {
+    "name": "run_dust",
+    "type": "sprite",
+    "attach": {
+      "mode": "socket",
+      "socket": "root"
+    },
+    "time": {
+      "start_frame": 18,
+      "end_frame": 30
+    },
+    "style": {
+      "color": [0.62, 0.56, 0.48, 1.0],
+      "emissive": 0.0,
+      "width": 0.55,
+      "lifetime": 0.45
+    }
+  },
+  {
+    "name": "jump_attack_hand_trail",
+    "type": "ribbon",
+    "attach": {
+      "mode": "socket",
+      "socket": "hand_r"
+    },
+    "time": {
+      "start_frame": 32,
+      "end_frame": 56
+    },
+    "style": {
+      "color": [0.52, 0.72, 1.0, 1.0],
+      "emissive": 3.2,
+      "width": 0.16,
+      "lifetime": 0.22
+    }
+  },
+  {
+    "name": "jump_attack_ground_impact",
+    "type": "burst",
+    "attach": {
+      "mode": "socket",
+      "socket": "hand_r"
+    },
+    "time": {
+      "start_frame": 48,
+      "end_frame": 60
+    },
+    "style": {
+      "color": [1.0, 0.64, 0.28, 1.0],
+      "emissive": 4.5,
+      "width": 1.2,
+      "lifetime": 0.35
+    }
+  }
+]
+

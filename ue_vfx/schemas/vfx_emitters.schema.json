@@ -1,0 +1,85 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://worldflex.local/schemas/vfx_emitters.schema.json",
+  "title": "WorldFlex VFX Emitters",
+  "type": "array",
+  "items": {
+    "type": "object",
+    "required": ["name", "type", "attach", "time", "style"],
+    "properties": {
+      "name": {
+        "type": "string"
+      },
+      "type": {
+        "type": "string",
+        "enum": ["sprite", "ribbon", "mesh", "beam", "burst"]
+      },
+      "attach": {
+        "type": "object",
+        "required": ["mode"],
+        "properties": {
+          "mode": {
+            "type": "string",
+            "enum": ["socket", "socket_pair", "bone", "world_point", "trajectory"]
+          },
+          "socket": {
+            "type": "string"
+          },
+          "start": {
+            "type": "string"
+          },
+          "end": {
+            "type": "string"
+          },
+          "trajectory": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "time": {
+        "type": "object",
+        "required": ["start_frame", "end_frame"],
+        "properties": {
+          "start_frame": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "end_frame": {
+            "type": "integer",
+            "minimum": 0
+          }
+        },
+        "additionalProperties": false
+      },
+      "style": {
+        "type": "object",
+        "properties": {
+          "color": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            },
+            "minItems": 3,
+            "maxItems": 4
+          },
+          "emissive": {
+            "type": "number",
+            "minimum": 0
+          },
+          "width": {
+            "type": "number",
+            "minimum": 0
+          },
+          "lifetime": {
+            "type": "number",
+            "minimum": 0
+          }
+        },
+        "additionalProperties": true
+      }
+    },
+    "additionalProperties": false
+  }
+}
+

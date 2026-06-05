@@ -1,0 +1,53 @@
+{
+  "skeleton_path": "/Game/WorldFlex/LuffiVFXTest/Character/luffi__2__Skeleton.luffi__2__Skeleton",
+  "skeleton_class": "Skeleton",
+  "candidate_methods": [],
+  "results": [
+    {
+      "method": "get_reference_pose",
+      "error": "'AnimPose' object is not iterable"
+    },
+    {
+      "method": "reference_pose.get_bone_names",
+      "value": [
+        "Hips",
+        "Spine",
+        "Spine1",
+        "Spine2",
+        "Neck",
+        "Head",
+        "HeadTop_End",
+        "LeftShoulder",
+        "LeftArm",
+        "LeftForeArm",
+        "LeftHand",
+        "LeftHandIndex1",
+        "LeftHandIndex2",
+        "LeftHandIndex3",
+        "LeftHandIndex4",
+        "RightShoulder",
+        "RightArm",
+        "RightForeArm",
+        "RightHand",
+        "RightHandIndex1",
+        "RightHandIndex2",
+        "RightHandIndex3",
+        "RightHandIndex4",
+        "LeftUpLeg",
+        "LeftLeg",
+        "LeftFoot",
+        "LeftToeBase",
+        "LeftToe_End",
+        "RightUpLeg",
+        "RightLeg",
+        "RightFoot",
+        "RightToeBase",
+        "RightToe_End"
+      ]
+    },
+    {
+      "method": "reference_pose.get_socket_names",
+      "value": []
+    }
+  ]
+}

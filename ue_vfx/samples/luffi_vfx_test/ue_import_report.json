@@ -1,0 +1,24 @@
+{
+  "destination_root": "/Game/WorldFlex/LuffiVFXTest",
+  "character_fbx": "D:\\assets\\luffi_sample\\luffi (2).fbx",
+  "motion_fbx": [
+    "D:\\assets\\luffi_sample\\Mma Kick.fbx",
+    "D:\\assets\\luffi_sample\\Standing Melee Run Jump Attack (1)(1).fbx"
+  ],
+  "character_imported": [
+    "/Game/WorldFlex/LuffiVFXTest/Character/luffi__2__Skeleton.luffi__2__Skeleton",
+    "/Game/WorldFlex/LuffiVFXTest/Character/Material_0.Material_0",
+    "/Game/WorldFlex/LuffiVFXTest/Character/luffi__2_.luffi__2_"
+  ],
+  "animation_imported": [
+    "/Game/WorldFlex/LuffiVFXTest/Animations/Mma_Kick.Mma_Kick",
+    "/Game/WorldFlex/LuffiVFXTest/Animations/Standing_Melee_Run_Jump_Attack__1__1_.Standing_Melee_Run_Jump_Attack__1__1_"
+  ],
+  "skeleton": "/Game/WorldFlex/LuffiVFXTest/Character/luffi__2__Skeleton.luffi__2__Skeleton",
+  "next_manual_steps": [
+    "Open each animation sequence.",
+    "Scrub to contact frames and correct the JSON frame numbers.",
+    "Add Anim Notifies for Niagara spawn events.",
+    "Create Niagara systems for kick trail, impact burst, and run dust."
+  ]
+}

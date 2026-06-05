@@ -1,0 +1,26 @@
+[
+	{
+		"frame": 7,
+		"time": 0.23333334922790527,
+		"duration": 1.3999999761581421,
+		"type": "Looping",
+		"bone": "Hips",
+		"niagara": "/Game/NiagaraExamples/FX_Footstep/NS_Footstep_Fire.NS_Footstep_Fire"
+	},
+	{
+		"frame": 47,
+		"time": 1.5666667222976685,
+		"duration": 0.23333323001861572,
+		"type": "Looping",
+		"bone": "RightHand",
+		"niagara": "/Game/NiagaraExamples/FX_Player/NS_Player_Electricity_Looping.NS_Player_Electricity_Looping"
+	},
+	{
+		"frame": 49,
+		"time": 1.6333333253860474,
+		"duration": 0,
+		"type": "Impact",
+		"bone": "Hips",
+		"niagara": "/Game/NiagaraExamples/FX_Explosions/NS_Explosion_Small.NS_Explosion_Small"
+	}
+]

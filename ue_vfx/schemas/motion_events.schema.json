@@ -1,0 +1,57 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://worldflex.local/schemas/motion_events.schema.json",
+  "title": "WorldFlex Motion Events",
+  "type": "array",
+  "items": {
+    "type": "object",
+    "required": ["frame", "type"],
+    "properties": {
+      "frame": {
+        "type": "integer",
+        "minimum": 0
+      },
+      "type": {
+        "type": "string",
+        "enum": [
+          "attack_start",
+          "attack_end",
+          "weapon_trail_start",
+          "weapon_trail_end",
+          "impact",
+          "teleport",
+          "summon",
+          "vfx_spawn",
+          "camera_switch",
+          "character_switch"
+        ]
+      },
+      "attach": {
+        "type": "string"
+      },
+      "position_source": {
+        "type": "string"
+      },
+      "vfx": {
+        "type": "string"
+      },
+      "root_delta": {
+        "type": "array",
+        "items": {
+          "type": "number"
+        },
+        "minItems": 3,
+        "maxItems": 3
+      },
+      "target": {
+        "type": "string"
+      },
+      "metadata": {
+        "type": "object",
+        "additionalProperties": true
+      }
+    },
+    "additionalProperties": false
+  }
+}
+
