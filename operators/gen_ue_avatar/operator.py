@@ -17,6 +17,7 @@ Typical usage:
 from models.gen_image.qwen_edit import QwenEditModel
 from models.gen_3d.trellis import TrellisModel
 from models.tools.depth_anything import DepthAnythingModel
+from models.tools.rmbg import RMBGModel
 from operators.gen_ue_avatar.funcs.gen_tpose import gen_tpose
 from operators.gen_ue_avatar.funcs.gen_3d_avatar import gen_3d_avatar
 from operators.gen_ue_avatar.funcs.gen_motion import detect_skeleton, gen_motion
@@ -39,11 +40,21 @@ class UEAvatarOperator:
         device = cfg.get("device", "cuda")
         self.gen_image_model = QwenEditModel(cfg["gen_image_model"], device=device)
         self.gen_3d_model = TrellisModel(cfg["gen_3d_model"], device=device)
-        # Optional: depth model for T-pose foreground extraction.
+
+        # Foreground / matting model for T-pose extraction.
+        # Priority:
+        #   1. cfg["rmbg_model"]  → RMBGModel (recommended, RMBG-1.4)
+        #   2. cfg["depth_model"] → DepthAnythingModel (legacy)
+        rmbg_path  = cfg.get("rmbg_model")
         depth_path = cfg.get("depth_model")
-        self.depth_model = (
-            DepthAnythingModel(depth_path, device=device) if depth_path else None
-        )
+        if rmbg_path:
+            self.mask_model = RMBGModel(rmbg_path, device=device)
+        elif depth_path:
+            self.mask_model = DepthAnythingModel(depth_path, device=device)
+        else:
+            self.mask_model = None
+        # Keep a legacy alias for backwards compatibility.
+        self.depth_model = self.mask_model
 
     # ------------------------------------------------------------------
     # Pipeline steps (thin wrappers that call funcs/)
@@ -59,7 +70,7 @@ class UEAvatarOperator:
             ref_image,
             description,
             gen_model=self.gen_image_model,
-            depth_model=self.depth_model,
+            mask_model=self.mask_model,
             **kwargs,
         )
 

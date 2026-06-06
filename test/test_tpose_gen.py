@@ -1,10 +1,10 @@
 """
-Test: T-pose generation (Qwen-Image-Edit + DepthAnything)
+Test: T-pose generation (Qwen-Image-Edit + RMBG-1.4)
 
 Pipeline:
     1. UEAvatarOperator.gen_tpose: reference image → game-CG T-pose
        - Qwen-Image-Edit  → white-bg T-pose CG render          (saved as *_tpose.png)
-       - DepthAnything    → foreground mask → transparent RGBA
+       - RMBG-1.4         → foreground mask → transparent RGBA
        - tight-crop + 1024x1024 square canvas                  (saved as *_tpose_fg.png)
 """
 
@@ -18,7 +18,7 @@ from operators.gen_ue_avatar.operator import UEAvatarOperator
 CFG = {
     "gen_image_model": "Qwen/Qwen-Image-Edit-2509",
     "gen_3d_model":    "microsoft/TRELLIS.2-4B",
-    "depth_model":     "depth-anything/Depth-Anything-V2-Large-hf",
+    "rmbg_model":      "briaai/RMBG-1.4",
     "device":          "cuda",
 }
 
@@ -28,7 +28,7 @@ if __name__ == "__main__":
     os.makedirs(OUTPUT_DIR, exist_ok=True)
 
     ref_image   = Image.open("assets/luffy.jpg")
-    description = "Monkey D. Luffy, straw hat pirate with rubber powers, wearing his iconic red vest"
+    description = "Monkey D. Luffy, the main protagonist of the One Piece anime series, wearing his iconic red vest and straw hat, with a cheerful expression and his signature stretched rubber body pose. I want him to use basketball as weapon."
 
     op = UEAvatarOperator(CFG)
 
