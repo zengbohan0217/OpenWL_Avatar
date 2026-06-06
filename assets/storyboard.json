@@ -1,30 +1,22 @@
-[
-    {
-        "group_id": 0,
-        "shots": [
-            {
-                "shot_id": 0,
-                "description": "Wide shot: straw hat pirate stands at the bow in a storm.",
-                "video_prompt": "Fixed camera, wide shot. A straw hat pirate stands at the ship's bow, storm raging, lightning in the background, dramatic cinematic lighting, game-quality render.",
-                "duration_sec": 5.0
-            }
-        ]
-    },
-    {
-        "group_id": 1,
-        "shots": [
-            {
-                "shot_id": 1,
-                "description": "Close-up: pirate charges his rubber gear attack.",
-                "video_prompt": "Close-up. A rubber-powered pirate's fist glows red with energy, gear second steam rising, dramatic slow motion, particle effects, AAA game visual style.",
-                "duration_sec": 4.0
-            },
-            {
-                "shot_id": 2,
-                "description": "Wide shot: massive punch shatters the enemy ship's mast.",
-                "video_prompt": "Wide shot. A powerful fist slams into a wooden ship mast, the mast exploding in splinters, shockwave ripples outward, slow motion, cinematic game CG.",
-                "duration_sec": 5.0
-            }
-        ]
-    }
-]
+{
+    "video_prompt": "Generate a cinematic AAA game CG sequence with all close-up shots. First, a low-angle close-up tilting from the character's lower body up to the upper body as the character holds the brim of their straw hat. Then, the character pulls their fist back in a charging stance. Finally, the character swings the charged fist forward in a powerful punch.",
+    "duration_sec": 2.0,
+    "shots": [
+        {
+            "shot_id": 0,
+            "description": "Close-up tilt-up shot: pirate holds the brim of his straw hat.",
+            "image_prompt": "Close-up shot, camera tilting up from the lower body to the upper body of a straw hat pirate. The character's hand is raised, fingers gripping the brim of his straw hat, shadow cast across his face, storm winds blowing his red vest and hat ribbon, dramatic rim lighting, lightning flashes, rain droplets, ultra-detailed AAA game CG render, cinematic composition.",
+            "time_sec": 0.0,
+            "ref": "original",
+            "strength": 0.9
+        },
+        {
+            "shot_id": 1,
+            "description": "Close-up: pirate pulls his fist back behind him, charging up.",
+            "image_prompt": "Close-up shot of the straw hat pirate from a side angle, his fist pulled back far behind his body in a charging stance, arm muscles tensed, red steam and gear-second energy swirling around the fist, glowing red particles, body leaning forward with intense focus, dramatic side lighting, motion blur on the energy effects, cinematic AAA game CG render, ultra-detailed.",
+            "time_sec": 1.6,
+            "ref": "original",
+            "strength": 0.9
+        }
+    ]
+}

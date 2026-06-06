@@ -1,12 +1,5 @@
 """
-Test: Game CG generation pipeline (group-based).
-
-Pipeline:
-    1. Load grouped storyboard from JSON
-    2. Generate per-shot scene images (List[List[str]] matching group structure)
-    3. Per group: one KeyframeInterpolationPipeline call (all shot images as keyframes)
-       → per-group mp4
-    4. Concatenate all per-group mp4s → final .mp4
+Test: Game CG generation pipeline (one continuous take, single LTX call).
 """
 
 import sys
@@ -30,19 +23,17 @@ if __name__ == "__main__":
 
     op = GameCGOperator(CFG)
 
-    # Step-by-step
-    groups       = op.get_storyboard(storyboard_input)
-    group_images = op.gen_storyboard_images(groups, ref_image)
+    storyboard  = op.get_storyboard(storyboard_input)
+    shot_images = op.gen_storyboard_images(storyboard, ref_image)
 
-    print(f"Storyboard: {len(groups)} groups")
-    for g, imgs in zip(groups, group_images):
-        shots = g.get("shots", [])
-        print(f"  Group {g.get('group_id')}: {len(shots)} shots")
-        for s, p in zip(shots, imgs):
-            print(f"    Shot {s['shot_id']}: {s['duration_sec']}s  {p}")
+    shots = storyboard.get("shots", [])
+    print(f"Storyboard: {len(shots)} shots")
+    print(f"  Global video_prompt: {storyboard.get('video_prompt', '')[:80]}...")
+    for s, p in zip(shots, shot_images):
+        t = s.get("time_sec", s.get("frame_idx", "?"))
+        print(f"  Shot {s['shot_id']}: t={t}  {p}")
 
-    # Per-group LTX call + concat → final video
-    final = op.gen_full_video(groups, group_images, output_path="output/luffy_cg.mp4")
+    final = op.gen_cg_video(storyboard, shot_images, output_path="output/luffy_cg.mp4")
     print(f"\n✅ Final CG: {final}")
 
     # Or end-to-end:
