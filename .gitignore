@@ -1,2 +1,16 @@
 cache_code/
 .DS_Store
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# Output / runtime artifacts
+output/
+
+# Editors
+.idea/
+.vscode/
