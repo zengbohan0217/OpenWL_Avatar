@@ -39,7 +39,11 @@ class UEAvatarOperator:
         self.cfg = cfg
         device = cfg.get("device", "cuda")
         self.gen_image_model = QwenEditModel(cfg["gen_image_model"], device=device)
-        self.gen_3d_model = TrellisModel(cfg["gen_3d_model"], device=device)
+        self.gen_3d_model = TrellisModel(
+            cfg["gen_3d_model"],
+            device=device,
+            envmap_path=cfg.get("envmap_path"),
+        )
 
         # Foreground / matting model for T-pose extraction.
         # Priority:
@@ -74,9 +78,14 @@ class UEAvatarOperator:
             **kwargs,
         )
 
-    def gen_3d_avatar(self, tpose_image):
-        """Step 2: Lift T-pose image to 3D avatar mesh."""
-        return gen_3d_avatar(tpose_image, self.gen_3d_model)
+    def gen_3d_avatar(self, tpose_image, **kwargs):
+        """Step 2: Lift T-pose image to 3D avatar mesh.
+
+        Extra kwargs (output_path, save_video, video_path, fps,
+        decimation_target, texture_size, return_intermediate, ...) are
+        forwarded to `funcs.gen_3d_avatar.gen_3d_avatar`.
+        """
+        return gen_3d_avatar(tpose_image, self.gen_3d_model, **kwargs)
 
     def gen_motion(self, mesh_path: str, motion_desc: str = ""):
         """Step 3: Detect skeleton and generate motion."""
