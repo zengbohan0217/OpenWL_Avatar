@@ -10,7 +10,7 @@ pip install torch==2.6.0 torchvision==0.21.0 --index-url https://download.pytorc
 conda install -y -c nvidia cuda-toolkit=12.4
 
 # 下载 TRELLIS.2 到 models/gen_3d/TRELLIS2_main
-git clone https://github.com/microsoft/TRELLIS.git models/gen_3d/TRELLIS2_main
+git clone https://github.com/microsoft/TRELLIS.2.git models/gen_3d/TRELLIS2_main
 
 # eigen 下载到 o-voxel/third_party/eigen
 git clone https://gitlab.com/libeigen/eigen.git models/gen_3d/TRELLIS2_main/extensions/o-voxel/third_party/eigen
