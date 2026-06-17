@@ -1,53 +1,224 @@
-"""
-ue_client.py — UE5 RPC client for pushing generated assets to Unreal Engine.
+"""Compatibility exports for the UE automation layer."""
 
-Communicates with UE5 via the Python Remote Control Plugin (HTTP RPC).
+from __future__ import annotations
 
-Functions:
-    import_avatar_to_ue  — push a 3D avatar asset into the UE5 project
-    import_scene_to_ue   — push a 3D scene asset into the UE5 project
-    import_motion_to_ue  — push and bind a motion file to an avatar in UE5
-"""
+from serving.ue.asset_importer import (
+    AssetImporter,
+    import_asset,
+    import_avatar_to_ue,
+    import_fbx_to_ue,
+    import_glb_to_ue,
+    import_motion_fbx_to_ue,
+    import_motion_to_ue,
+    import_motion_to_ue_paths,
+    import_scene_to_ue,
+)
+from serving.ue.asset_registry import (
+    AssetRegistry,
+    list_assets_by_type,
+    list_avatar_assets,
+    list_effect_assets,
+    list_material_assets,
+    list_motion_assets,
+    list_prop_assets,
+    list_skeleton_assets,
+    list_texture_assets,
+    list_ue_assets,
+    list_weapon_assets,
+)
+from serving.ue.asset_types import (
+    ASSET_TYPE_ALIASES,
+    ASSET_TYPE_CLASSES,
+    ASSET_TYPE_DEFAULT_DESTS,
+    ASSET_TYPE_SUFFIXES,
+    GENERIC_IMPORT_SUFFIXES,
+    MESH_IMPORT_SUFFIXES,
+    TEXTURE_IMPORT_SUFFIXES,
+    _normalize_asset_type,
+    default_dest_for_asset_type,
+)
+from serving.ue.config import (
+    DEFAULT_AVATAR_DEST,
+    DEFAULT_EFFECT_DEST,
+    DEFAULT_MATERIAL_DEST,
+    DEFAULT_MOTION_DEST,
+    DEFAULT_PROP_DEST,
+    DEFAULT_SCENE_DEST,
+    DEFAULT_SEQUENCE_DEST,
+    DEFAULT_TEXTURE_DEST,
+    DEFAULT_WEAPON_DEST,
+    PIXEL_STREAMING_URL,
+    VIEWER_HOST,
+    VIEWER_PORT,
+    UE_HOST,
+    UE_PORT,
+    UE_PYTHON_PLUGIN_PATH,
+    UE_REMOTE_URL,
+    UE_RPC_HOST,
+)
+from serving.ue.constants import (
+    DEFAULT_IMPORT_ROOT,
+    DEFAULT_MOVEMENT_STEP,
+    DEFAULT_PLAYABLE_ACTOR_LABEL,
+    DEFAULT_PLAYABLE_CLASS_PATH,
+    DEFAULT_PRESENTATION_ACTOR_LABEL,
+    DEFAULT_PRESENTATION_CAMERA_LABEL,
+    DEFAULT_ROTATION_STEP,
+    DEFAULT_RUN_SPEED,
+    DEFAULT_WALK_SPEED,
+)
+from serving.ue.scripts.import_scripts import (
+    _build_fbx_import_script,
+    _build_generic_import_script,
+    _build_motion_import_script,
+    _motion_import_name,
+    _ue_import_helpers_script,
+)
+from serving.ue.scripts.presentation_scripts import (
+    _build_avatar_present_script,
+    _build_clear_presentation_script,
+    _build_present_existing_avatar_script,
+    _build_present_playable_avatar_script,
+)
+from serving.ue.python_rpc_client import (
+    UEPythonRPCClient,
+    _call_ue_python_json,
+    _call_ue_python_remote_execution,
+    call_ue_python,
+)
+from serving.ue.remote_control_client import (
+    RemoteControlClient,
+    _call_ue_python_remote_control,
+    _format_remote_control_error,
+    check_ue_connection,
+)
+from serving.ue.scripts.scene_control_scripts import (
+    _build_get_actor_transform_script,
+    _build_move_actor_direction_script,
+    _build_move_actor_script,
+    _build_rotate_actor_script,
+    _build_set_actor_animation_script,
+)
+from serving.ue.scene_controller import (
+    SceneController,
+    clear_presentation_in_ue,
+    get_actor_transform,
+    move_actor,
+    move_actor_direction,
+    present_avatar_in_ue,
+    present_existing_avatar_in_ue,
+    present_fbx_in_ue,
+    present_playable_avatar_in_ue,
+    rotate_actor,
+    set_actor_animation,
+)
+from serving.ue.sequence_controller import (
+    SequenceController,
+    import_motion_and_play_in_ue,
+    play_motion_on_avatar,
+    resolve_avatar_skeleton,
+)
+from serving.ue.scripts.sequence_scripts import _build_play_motion_script, _build_resolve_avatar_skeleton_script
+from serving.ue.ue_client import UEClient
+from serving.ue.utils import format_ue_response, normalize_dest_path, validate_local_file
 
-
-UE_RPC_HOST = "http://localhost:30010"  # UE5 Remote Control Plugin default port
-
-
-def import_avatar_to_ue(avatar_path: str) -> bool:
-    """
-    Push a 3D avatar asset into the current UE5 project via RPC.
-
-    Args:
-        avatar_path: Path to the .glb / .fbx avatar file.
-
-    Returns:
-        True if import succeeded.
-    """
-    raise NotImplementedError
-
-
-def import_scene_to_ue(scene_path: str) -> bool:
-    """
-    Push a 3D scene asset into the current UE5 project via RPC.
-
-    Args:
-        scene_path: Path to the .glb / .usd scene file.
-
-    Returns:
-        True if import succeeded.
-    """
-    raise NotImplementedError
-
-
-def import_motion_to_ue(motion_path: str, avatar_name: str) -> bool:
-    """
-    Push and bind a motion file to an avatar in UE5 via RPC.
-
-    Args:
-        motion_path:  Path to the .bvh / .fbx motion file.
-        avatar_name:  Name of the avatar asset in UE5 to bind the motion to.
-
-    Returns:
-        True if import succeeded.
-    """
-    raise NotImplementedError
+__all__ = [
+    "ASSET_TYPE_ALIASES",
+    "ASSET_TYPE_CLASSES",
+    "ASSET_TYPE_DEFAULT_DESTS",
+    "ASSET_TYPE_SUFFIXES",
+    "AssetImporter",
+    "AssetRegistry",
+    "DEFAULT_AVATAR_DEST",
+    "DEFAULT_EFFECT_DEST",
+    "DEFAULT_IMPORT_ROOT",
+    "DEFAULT_MATERIAL_DEST",
+    "DEFAULT_MOTION_DEST",
+    "DEFAULT_MOVEMENT_STEP",
+    "DEFAULT_PLAYABLE_ACTOR_LABEL",
+    "DEFAULT_PLAYABLE_CLASS_PATH",
+    "DEFAULT_PRESENTATION_ACTOR_LABEL",
+    "DEFAULT_PRESENTATION_CAMERA_LABEL",
+    "DEFAULT_PROP_DEST",
+    "DEFAULT_SCENE_DEST",
+    "DEFAULT_SEQUENCE_DEST",
+    "DEFAULT_ROTATION_STEP",
+    "DEFAULT_RUN_SPEED",
+    "DEFAULT_TEXTURE_DEST",
+    "DEFAULT_WALK_SPEED",
+    "DEFAULT_WEAPON_DEST",
+    "GENERIC_IMPORT_SUFFIXES",
+    "MESH_IMPORT_SUFFIXES",
+    "PIXEL_STREAMING_URL",
+    "RemoteControlClient",
+    "SceneController",
+    "SequenceController",
+    "TEXTURE_IMPORT_SUFFIXES",
+    "UEClient",
+    "UEPythonRPCClient",
+    "VIEWER_HOST",
+    "VIEWER_PORT",
+    "UE_HOST",
+    "UE_PORT",
+    "UE_PYTHON_PLUGIN_PATH",
+    "UE_REMOTE_URL",
+    "UE_RPC_HOST",
+    "_build_avatar_present_script",
+    "_build_clear_presentation_script",
+    "_build_fbx_import_script",
+    "_build_generic_import_script",
+    "_build_get_actor_transform_script",
+    "_build_motion_import_script",
+    "_build_move_actor_direction_script",
+    "_build_move_actor_script",
+    "_build_play_motion_script",
+    "_build_present_existing_avatar_script",
+    "_build_present_playable_avatar_script",
+    "_build_resolve_avatar_skeleton_script",
+    "_build_rotate_actor_script",
+    "_build_set_actor_animation_script",
+    "_call_ue_python_json",
+    "_call_ue_python_remote_control",
+    "_call_ue_python_remote_execution",
+    "_format_remote_control_error",
+    "_motion_import_name",
+    "_normalize_asset_type",
+    "_ue_import_helpers_script",
+    "call_ue_python",
+    "check_ue_connection",
+    "clear_presentation_in_ue",
+    "default_dest_for_asset_type",
+    "format_ue_response",
+    "get_actor_transform",
+    "import_asset",
+    "import_avatar_to_ue",
+    "import_fbx_to_ue",
+    "import_glb_to_ue",
+    "import_motion_and_play_in_ue",
+    "import_motion_fbx_to_ue",
+    "import_motion_to_ue",
+    "import_motion_to_ue_paths",
+    "import_scene_to_ue",
+    "list_assets_by_type",
+    "list_avatar_assets",
+    "list_effect_assets",
+    "list_material_assets",
+    "list_motion_assets",
+    "list_prop_assets",
+    "list_skeleton_assets",
+    "list_texture_assets",
+    "list_ue_assets",
+    "list_weapon_assets",
+    "move_actor",
+    "move_actor_direction",
+    "normalize_dest_path",
+    "play_motion_on_avatar",
+    "present_avatar_in_ue",
+    "present_existing_avatar_in_ue",
+    "present_fbx_in_ue",
+    "present_playable_avatar_in_ue",
+    "resolve_avatar_skeleton",
+    "rotate_actor",
+    "set_actor_animation",
+    "validate_local_file",
+]
