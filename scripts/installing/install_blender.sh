@@ -1,9 +1,11 @@
 #!/bin/bash
-# Download & install Blender 4.2.0 for Puppeteer on Linux cluster.
+# Download & install Blender 4.2.0 for headless Linux cluster use.
 #
-# Two components (same as cluster setup):
+# Two components:
 #   1. Blender binary  — official portable tarball (CLI / background mode)
-#   2. bpy + X11/OpenGL — Python module in conda env (export.py, bake scripts)
+#   2. bpy + X11/OpenGL — Python module in a conda env (export.py, bake scripts)
+#
+# Works with any conda env via ENV_PREFIX (default: puppeteer env).
 #
 # Usage:
 #   bash scripts/install_blender.sh              # binary + bpy (default)
@@ -15,15 +17,13 @@
 #   BLENDER_VERSION=4.2.0
 #   BLENDER_INSTALL_ROOT=/workspace/zhukaixin/tools
 #   ENV_PREFIX=/workspace/zhukaixin/anaconda_envs/puppeteer
+#   CONDA=/home/zhukaixin/miniconda3/bin/conda
 #   http_proxy / https_proxy  (auto-detected if local proxy is up)
 #
 set -euo pipefail
 
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-PUPPETEER_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
-
 BLENDER_VERSION="${BLENDER_VERSION:-4.2.0}"
-BLENDER_MAJOR="${BLENDER_MAJOR:-${BLENDER_VERSION%.*}}}"
+BLENDER_MAJOR="${BLENDER_MAJOR:-${BLENDER_VERSION%.*}}"
 BLENDER_INSTALL_ROOT="${BLENDER_INSTALL_ROOT:-/workspace/zhukaixin/tools}"
 BLENDER_CACHE_DIR="${BLENDER_CACHE_DIR:-${BLENDER_INSTALL_ROOT}/cache}"
 ENV_PREFIX="${ENV_PREFIX:-/workspace/zhukaixin/anaconda_envs/puppeteer}"
@@ -104,7 +104,6 @@ download_blender_binary() {
     exit 1
   fi
 
-  # Convenience symlink: tools/blender -> .../blender
   ln -sfn "$BLENDER_BIN" "${BLENDER_INSTALL_ROOT}/blender"
 
   echo "==> Blender binary OK: $("$BLENDER_BIN" --version | head -1)"
@@ -114,13 +113,28 @@ write_blender_env_hook() {
   local hook_dir="${BLENDER_INSTALL_ROOT}/env"
   mkdir -p "$hook_dir"
   cat > "${hook_dir}/blender.sh" <<EOF
-# Source after conda activate puppeteer (optional, for CLI blender):
+# Source after conda activate (optional, for CLI blender):
 #   source ${hook_dir}/blender.sh
 export BLENDER_ROOT="${BLENDER_EXTRACT_DIR}"
 export BLENDER_BIN="${BLENDER_BIN}"
 export PATH="\$(dirname "\${BLENDER_BIN}"):\${PATH}"
 EOF
   echo "==> Env hook: ${hook_dir}/blender.sh"
+}
+
+write_bpy_activate_hook() {
+  local activate_dir="${ENV_PREFIX}/etc/conda/activate.d"
+  mkdir -p "$activate_dir"
+  cat > "${activate_dir}/bpy.sh" <<'HOOKEOF'
+# bpy / headless OpenGL (install_blender.sh)
+export _BLENDER_CONDA_LIB="${CONDA_PREFIX}/lib"
+export LD_LIBRARY_PATH="${_BLENDER_CONDA_LIB}:${LD_LIBRARY_PATH:-}"
+unset PYOPENGL_PLATFORM
+
+[ ! -e "${_BLENDER_CONDA_LIB}/libGL.so" ] && ln -sf libGL.so.1 "${_BLENDER_CONDA_LIB}/libGL.so" 2>/dev/null || true
+[ ! -e "${_BLENDER_CONDA_LIB}/libOpenGL.so.0" ] && ln -sf libGL.so.1 "${_BLENDER_CONDA_LIB}/libOpenGL.so.0" 2>/dev/null || true
+HOOKEOF
+  echo "==> Created ${activate_dir}/bpy.sh"
 }
 
 install_bpy_runtime() {
@@ -134,7 +148,7 @@ install_bpy_runtime() {
 
   if [[ ! -d "$ENV_PREFIX" ]]; then
     echo "ERROR: conda env not found: $ENV_PREFIX"
-    echo "Run install_env.sh first, or set ENV_PREFIX to your puppeteer env."
+    echo "Create it first, e.g.: conda create -p $ENV_PREFIX python=3.11.9 -y"
     exit 1
   fi
 
@@ -144,7 +158,6 @@ install_bpy_runtime() {
   pyver="$(python -c 'import sys; print(f"{sys.version_info.major}.{sys.version_info.minor}")')"
   if [[ "$pyver" != "3.11" ]]; then
     echo "WARNING: bpy ${BLENDER_VERSION} requires Python 3.11; current env is Python $pyver"
-    echo "         Puppeteer unified env should use Python 3.11 (see install_env.sh)."
   fi
 
   echo "==> Installing bpy==${BLENDER_VERSION} in ${ENV_PREFIX}..."
@@ -161,31 +174,9 @@ install_bpy_runtime() {
   ln -sf libGL.so.1 "${lib}/libGL.so" 2>/dev/null || true
   ln -sf libGL.so.1 "${lib}/libOpenGL.so.0" 2>/dev/null || true
 
-  # Ensure conda activate hook exists (same as unified puppeteer env)
-  local activate_dir="${ENV_PREFIX}/etc/conda/activate.d"
-  mkdir -p "$activate_dir"
-  if [[ ! -f "${activate_dir}/puppeteer.sh" ]]; then
-    cat > "${activate_dir}/puppeteer.sh" <<'HOOKEOF'
-# Puppeteer unified env (inference + FBX export)
-export PUPPETEER_ROOT="${PUPPETEER_ROOT:-/workspace/zhukaixin/Puppeteer}"
-export PUPPETEER_LLM="${PUPPETEER_LLM:-${PUPPETEER_ROOT}/hf_cache/opt-350m}"
-export HF_HOME="${HF_HOME:-${PUPPETEER_ROOT}/hf_cache}"
-export HF_HUB_CACHE="${HF_HUB_CACHE:-${PUPPETEER_ROOT}/hf_cache/hub}"
+  write_bpy_activate_hook
 
-export _PUPPETEER_CONDA_LIB="${CONDA_PREFIX}/lib"
-export _PUPPETEER_TORCH_LIB="${CONDA_PREFIX}/lib/python3.11/site-packages/torch/lib"
-export PUPPETEER_LD_LIBRARY_PATH="${_PUPPETEER_TORCH_LIB}:${_PUPPETEER_CONDA_LIB}"
-export LD_LIBRARY_PATH="${PUPPETEER_LD_LIBRARY_PATH}:${LD_LIBRARY_PATH:-}"
-
-unset PYOPENGL_PLATFORM
-
-[ ! -e "${_PUPPETEER_CONDA_LIB}/libGL.so" ] && ln -sf libGL.so.1 "${_PUPPETEER_CONDA_LIB}/libGL.so" 2>/dev/null || true
-[ ! -e "${_PUPPETEER_CONDA_LIB}/libOpenGL.so.0" ] && ln -sf libGL.so.1 "${_PUPPETEER_CONDA_LIB}/libOpenGL.so.0" 2>/dev/null || true
-HOOKEOF
-    echo "==> Created ${activate_dir}/puppeteer.sh"
-  fi
-
-  export LD_LIBRARY_PATH="${ENV_PREFIX}/lib/python3.11/site-packages/torch/lib:${ENV_PREFIX}/lib:${LD_LIBRARY_PATH:-}"
+  export LD_LIBRARY_PATH="${ENV_PREFIX}/lib:${LD_LIBRARY_PATH:-}"
   unset PYOPENGL_PLATFORM
 
   echo "==> Verifying bpy import..."
@@ -210,7 +201,7 @@ verify_install() {
   if [[ -x "$CONDA" && -d "$ENV_PREFIX" ]]; then
     eval "$("$CONDA" shell.bash hook)"
     conda activate "$ENV_PREFIX"
-    export LD_LIBRARY_PATH="${ENV_PREFIX}/lib/python3.11/site-packages/torch/lib:${ENV_PREFIX}/lib:${LD_LIBRARY_PATH:-}"
+    export LD_LIBRARY_PATH="${ENV_PREFIX}/lib:${LD_LIBRARY_PATH:-}"
     unset PYOPENGL_PLATFORM
     if python -c "import bpy; print('[OK] bpy', bpy.app.version_string)" 2>/dev/null; then
       :
@@ -225,7 +216,6 @@ verify_install() {
   return "$ok"
 }
 
-# --- parse args ---
 while [[ $# -gt 0 ]]; do
   case "$1" in
     --all) MODE=all ;;
@@ -241,7 +231,7 @@ done
 setup_proxy
 
 echo "=============================================="
-echo " Blender ${BLENDER_VERSION} installer (Puppeteer)"
+echo " Blender ${BLENDER_VERSION} installer"
 echo "=============================================="
 echo " Mode:    $MODE"
 echo " Binary:  $BLENDER_BIN"
@@ -273,7 +263,7 @@ echo ""
 echo "Done."
 echo ""
 echo "Quick start:"
-echo "  source ${PUPPETEER_ROOT}/setup_env.sh          # bpy for Python scripts"
-echo "  source ${BLENDER_INSTALL_ROOT}/env/blender.sh  # optional: blender CLI"
-echo "  blender --background --python your_script.py   # headless Blender"
-echo "  python ${PUPPETEER_ROOT}/export.py ...         # uses bpy in conda"
+echo "  conda activate ${ENV_PREFIX}"
+echo "  source ${BLENDER_INSTALL_ROOT}/env/blender.sh   # optional: blender CLI on PATH"
+echo "  blender --background --python your_script.py    # headless Blender binary"
+echo "  python -c \"import bpy; print(bpy.app.version_string)\"  # bpy in conda"
