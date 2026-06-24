@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>OpenWL UE Viewer</title>
+  <link rel="stylesheet" href="/static/viewer.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div>
+      <h1>OpenWL UE Streaming Viewer</h1>
+      <p>独立本地 UE 实时画面推送与角色控制页；资产上传 / 导入请使用 7860 页面</p>
+    </div>
+    <div class="status-row">
+      <span id="ueStatus" class="pill muted">UE: checking</span>
+      <span id="pixelStatus" class="pill muted">Pixel Streaming: checking</span>
+    </div>
+  </header>
+
+  <main class="layout">
+    <section class="viewport-panel">
+      <div class="runtime-hint">
+        Runtime 输入模式：先点击 UE 画面，让 Pixel Streaming iframe 获得键盘焦点；如果 7870 内嵌画面不吃 WASD，请直接打开 Pixel Streaming 原始页面控制。
+        <a id="pixelDirectLink" href="#" target="_blank" rel="noreferrer" hidden>打开 Pixel Streaming 页面</a>
+      </div>
+      <iframe id="pixelFrame" title="UE Pixel Streaming viewport" allow="fullscreen; autoplay; clipboard-read; clipboard-write" hidden></iframe>
+      <div id="pixelFallback" class="fallback">
+        <h2>等待 UE Pixel Streaming 画面</h2>
+        <p id="pixelMessage">正在检查 Pixel Streaming 配置。</p>
+        <p>这个页面只嵌入 UE Pixel Streaming 播放页并发送控制请求，不负责上传资产。先确认 <code>http://127.0.0.1:8080</code> 能看到 UE 画面，再把 <code>OPENWL_PIXEL_STREAMING_URL</code> 设置为该地址。</p>
+        <p>端口分工：<code>7860</code> 是资产上传页，<code>7870</code> 是 OpenWL Viewer，<code>8080</code> 是 Pixel Streaming 播放页，<code>8888</code> 是 UE streamer WebSocket。</p>
+      </div>
+    </section>
+
+    <aside class="control-panel">
+      <section class="card">
+        <h2>Runtime 可玩角色</h2>
+        <button id="refreshAssetsBtn" class="primary">刷新 UE 资产</button>
+        <p class="muted-text">选择导入的 SkeletalMesh Avatar，绑定 Idle / Move 动作，然后生成可被 Player 0 控制的 C++ <code>OpenWLPlayableCharacter</code>。如果以后有蓝图子类，也可以继续复用同一接口。</p>
+        <label>
+          Avatar（SkeletalMesh）
+          <select id="avatarSelect"></select>
+        </label>
+        <label>
+          Idle Motion（站立待机）
+          <select id="idleMotionSelect"></select>
+        </label>
+        <label>
+          Move Motion（移动/跑步）
+          <select id="moveMotionSelect"></select>
+        </label>
+        <div class="button-grid two">
+          <label>
+            Mesh Forward
+            <select id="meshForwardSelect">
+              <option value="auto">Auto</option>
+              <option value="+X">+X</option>
+              <option value="+Y">+Y</option>
+              <option value="-X">-X</option>
+              <option value="-Y">-Y</option>
+            </select>
+          </label>
+          <label>
+            Mesh Yaw（可选）
+            <input id="meshYawInput" type="number" step="1" placeholder="空=用左侧方向" />
+          </label>
+        </div>
+        <div class="button-grid two">
+          <label>
+            Walk Speed
+            <input id="walkSpeedInput" type="number" step="10" value="320" />
+          </label>
+          <label>
+            Run Speed
+            <input id="runSpeedInput" type="number" step="10" value="620" />
+          </label>
+        </div>
+        <button id="presentPlayableAvatarBtn" class="primary">启动可玩角色</button>
+      </section>
+
+      <section class="card">
+        <h2>资产 / 调试展示</h2>
+        <p class="muted-text">下面仍是旧 Editor 调试路径，只生成展示 Actor / Sequencer，不会被 WASD 控制。</p>
+        <label>
+          Motion（Sequencer 调试播放）
+          <select id="motionSelect"></select>
+        </label>
+        <div class="button-grid two">
+          <button id="presentAvatarBtn">调试展示 Avatar</button>
+          <button id="playMotionBtn">调试播放 Motion</button>
+        </div>
+        <button id="clearSceneBtn" class="danger">清除当前展示</button>
+      </section>
+
+      <section class="card">
+        <h2>Runtime 输入说明</h2>
+        <p class="muted-text">WASD / 鼠标 / Space 跳跃 / LeftShift 跑步不走 FastAPI 后端。请点击左侧 Pixel Streaming 画面，让 UE Runtime 自己接收输入并处理 CharacterMovement、Camera 和动画状态。</p>
+        <p class="muted-text">如果 7870 内嵌画面不响应键盘，多半是 iframe 没拿到焦点；请点击画面后再试，或直接打开 8080 Pixel Streaming 原始页面控制。</p>
+        <p class="muted-text">UE Editor PIE 或 Play 窗口最小化、后台、省电限速时可能不 tick 或不吃输入。测试时请保持 UE Play/Standalone 窗口可见；正式稳定推流建议用 Standalone 或 packaged Pixel Streaming。</p>
+      </section>
+
+      <section class="card log-card">
+        <h2>日志</h2>
+        <pre id="logOutput"></pre>
+      </section>
+    </aside>
+  </main>
+
+  <script src="/static/viewer.js?v=playable-avatar-1"></script>
+</body>
+</html>

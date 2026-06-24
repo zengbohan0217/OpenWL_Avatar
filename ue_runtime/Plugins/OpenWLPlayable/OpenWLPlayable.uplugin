@@ -1,0 +1,18 @@
+{
+  "FileVersion": 3,
+  "Version": 1,
+  "VersionName": "0.1.0",
+  "FriendlyName": "OpenWL Playable Runtime",
+  "Description": "Runtime playable character prototype for OpenWL Avatar Pixel Streaming demos.",
+  "Category": "OpenWL",
+  "CreatedBy": "OpenWL",
+  "EnabledByDefault": false,
+  "CanContainContent": true,
+  "Modules": [
+    {
+      "Name": "OpenWLPlayable",
+      "Type": "Runtime",
+      "LoadingPhase": "Default"
+    }
+  ]
+}

@@ -1,2 +1,16 @@
-cache_code/
+# Python cache
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# VSCode
+.vscode/
+
+# Claude
+.claude/
+
+# macOS
 .DS_Store
+
+# Project cache
+cache_code/
