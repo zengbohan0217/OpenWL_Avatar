@@ -47,7 +47,8 @@ def _resolve_ref(ref_field, original: Image.Image,
 
 
 def gen_shot_image(shot: dict, ref_image: Image.Image, model,
-                   output_dir: str = "output/storyboard") -> str:
+                   output_dir: str = "output/storyboard",
+                   seed: int = 42) -> str:
     """Generate one keyframe image for a shot. Returns the saved path."""
     shot_id = shot.get("shot_id", 0)
     prompt  = shot.get("image_prompt",
@@ -56,13 +57,14 @@ def gen_shot_image(shot: dict, ref_image: Image.Image, model,
     Path(output_dir).mkdir(parents=True, exist_ok=True)
     output_path = str(Path(output_dir) / f"shot_{shot_id:02d}.png")
 
-    image = model.edit(ref_image, prompt)
+    image = model.edit(ref_image, prompt, seed=seed)
     image.save(output_path)
     return output_path
 
 
 def gen_storyboard_images(shots: list, ref_image: Image.Image, model,
-                          output_dir: str = "output/storyboard") -> list:
+                          output_dir: str = "output/storyboard",
+                          seed: int = 42) -> list:
     """
     Generate keyframe images for all shots, with chained reference support.
 
@@ -88,7 +90,7 @@ def gen_storyboard_images(shots: list, ref_image: Image.Image, model,
                                     shot.get("description", "")))
         out_path = str(Path(output_dir) / f"shot_{shot_id:02d}.png")
 
-        img = model.edit(src, prompt)
+        img = model.edit(src, prompt, seed=seed)
         img.save(out_path)
 
         paths.append(out_path)

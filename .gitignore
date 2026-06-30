@@ -1,2 +1,6 @@
 cache_code/
 .DS_Store
+output/
+.models/
+__pycache__/
+*.pyc
