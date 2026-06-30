@@ -1,22 +1,81 @@
 {
-    "video_prompt": "Generate a cinematic AAA game CG sequence with all close-up shots. First, a low-angle close-up tilting from the character's lower body up to the upper body as the character holds the brim of their straw hat. Then, the character pulls their fist back in a charging stance. Finally, the character swings the charged fist forward in a powerful punch.",
-    "duration_sec": 2.0,
-    "shots": [
-        {
-            "shot_id": 0,
-            "description": "Close-up tilt-up shot: pirate holds the brim of his straw hat.",
-            "image_prompt": "Close-up shot, camera tilting up from the lower body to the upper body of a straw hat pirate. The character's hand is raised, fingers gripping the brim of his straw hat, shadow cast across his face, storm winds blowing his red vest and hat ribbon, dramatic rim lighting, lightning flashes, rain droplets, ultra-detailed AAA game CG render, cinematic composition.",
-            "time_sec": 0.0,
-            "ref": "original",
-            "strength": 0.9
-        },
-        {
-            "shot_id": 1,
-            "description": "Close-up: pirate pulls his fist back behind him, charging up.",
-            "image_prompt": "Close-up shot of the straw hat pirate from a side angle, his fist pulled back far behind his body in a charging stance, arm muscles tensed, red steam and gear-second energy swirling around the fist, glowing red particles, body leaning forward with intense focus, dramatic side lighting, motion blur on the energy effects, cinematic AAA game CG render, ultra-detailed.",
-            "time_sec": 1.6,
-            "ref": "original",
-            "strength": 0.9
-        }
-    ]
+  "schema_version": "game_cg_storyboard_v2_minimal",
+  "video_prompt": "A continuous AAA anime game skill CG showing one straw hat pirate preparing, charging, releasing, striking, and recovering from a close-range fire-and-lightning punch. Keep one continuous action arc with readable timing and no on-screen text.",
+  "character_prompt": "The same young straw hat pirate in every keyframe: tan skin, black messy hair, round eyes, straw hat with red band, open red vest, blue shorts, sandals, lean athletic body, determined expression.",
+  "style_prompt": "High-detail Unreal Engine 5 style anime game cinematic, dramatic rim light, wet stone arena at night, storm clouds, orange fire mixed with blue-white lightning, sharp clean image, no watermark, no subtitles.",
+  "duration_sec": 4.8,
+  "shots": [
+    {
+      "shot_id": 0,
+      "beat_role": "setup",
+      "segment_id": 0,
+      "transition": "transition",
+      "time_sec": 0.0,
+      "ref": "original",
+      "strength": 1.0,
+      "camera": "Low medium shot, camera slightly below waist height, slow push in from front-left.",
+      "subject": "The pirate plants his feet wide on wet stone, one hand touching the straw hat brim, shoulders squared before the attack.",
+      "vfx": "Only faint sparks around the clenched right fist and rain mist around the feet."
+    },
+    {
+      "shot_id": 1,
+      "beat_role": "anticipation",
+      "segment_id": 0,
+      "transition": "transition",
+      "time_sec": 0.7,
+      "ref": "original",
+      "strength": 0.88,
+      "camera": "Tighter three-quarter close-up from the right side, slight handheld tension.",
+      "subject": "The pirate lowers his center of gravity and pulls the right fist far behind his body, jaw clenched, eyes locked forward.",
+      "vfx": "Red-orange heat haze begins wrapping the forearm while small blue lightning filaments snap around the knuckles."
+    },
+    {
+      "shot_id": 2,
+      "beat_role": "charge",
+      "segment_id": 0,
+      "transition": "transition",
+      "time_sec": 1.5,
+      "ref": "original",
+      "strength": 0.86,
+      "camera": "Dynamic close-up of the charged fist in foreground with the face behind it, shallow depth of field.",
+      "subject": "The fist swells visually with power as the pirate twists the torso, hat shadow over intense eyes, muscles tensed before launch.",
+      "vfx": "Dense spiral of fire, red steam, and blue-white lightning coils around the arm, bright core glow on the fist."
+    },
+    {
+      "shot_id": 3,
+      "beat_role": "release",
+      "segment_id": 1,
+      "transition": "transition",
+      "time_sec": 2.4,
+      "ref": "original",
+      "strength": 0.84,
+      "camera": "Fast tracking side shot, camera whipping with the punch direction, strong diagonal composition.",
+      "subject": "The pirate lunges forward from the back foot and drives the charged fist across frame, body stretched into a powerful straight punch.",
+      "vfx": "A long comet-like trail of orange fire and branching blue lightning follows the fist, rain vaporized into white streaks."
+    },
+    {
+      "shot_id": 4,
+      "beat_role": "impact",
+      "segment_id": 1,
+      "transition": "transition",
+      "time_sec": 3.3,
+      "ref": "original",
+      "strength": 0.82,
+      "camera": "Extreme close impact frame from a low front angle, slight lens shake, fist centered.",
+      "subject": "The charged fist connects with an unseen armored target just off frame, the pirate's face visible behind the blast with fierce focus.",
+      "vfx": "Explosive circular shockwave, cracked wet stone, fire burst, blue lightning forks radiating from the impact point."
+    },
+    {
+      "shot_id": 5,
+      "beat_role": "aftermath",
+      "segment_id": 1,
+      "transition": "transition",
+      "time_sec": 4.2,
+      "ref": "original",
+      "strength": 1.0,
+      "camera": "Medium hero shot, camera settles in front of the pirate with smoke drifting past the lens.",
+      "subject": "The pirate holds the finishing stance with the arm extended, then begins to relax while the straw hat tilts back into view.",
+      "vfx": "Fading embers, residual blue lightning crawling over the fist, smoke and rain mist clearing to reveal cracked ground."
+    }
+  ]
 }

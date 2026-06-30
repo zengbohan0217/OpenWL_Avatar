@@ -43,10 +43,13 @@ UEAvatarOperator         ← operators/gen_ue_avatar/operator.py（纯 AI 生成
 serving/ue_client.py     ← Python 调 UE5 RPC，推送结果到前端展示
 
 GameCGOperator           ← operators/gen_game_cg/operator.py
-  ├── gen_storyboard()   ← funcs/gen_storyboard.py (ReasoningModel)
-  ├── gen_cg_video()     ← funcs/gen_cg_video.py   (GenVideoModel)
-  └── compose_cg()       ← funcs/compose_cg.py
+  ├── get_storyboard()       ← funcs/gen_storyboard.py (JSON / ReasoningModel)
+  ├── normalize/compile/validate storyboard IR
+  ├── gen_storyboard_images()← funcs/gen_storyboard_image.py (Qwen-Image-Edit)
+  └── gen_cg_video()         ← funcs/gen_cg_video.py (LTX-2.3 keyframe interpolation)
 ```
+
+`gen_game_cg` 当前真实链路是：分镜 IR → Qwen 关键帧 → 释放 Qwen 显存 → LTX-2.3 插值成视频。多 `segment_id` 会分段生成 clip 并用 ffmpeg concat；独立 hard-cut I2V 和 `compose_cg.py` 当前未实现。
 
 ## 快速开始
 
