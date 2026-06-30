@@ -40,6 +40,14 @@ from models.gen_video.ltx import LTXModel, snap_frames, DEFAULT_FPS
 from operators.gen_game_cg.funcs.storyboard_ir import validate_storyboard_timing
 
 
+def _snap_frames_at_least(n: int) -> int:
+    """Snap to LTX's 8k+1 frame count without dropping below the requested length."""
+    snapped = snap_frames(n)
+    while snapped < n:
+        snapped += 8
+    return snapped
+
+
 def _resolve_positions(shots: list, frame_rate: float) -> List[int]:
     """
     Resolve each shot's frame_idx using the priority:
@@ -71,18 +79,18 @@ def _resolve_total_frames(storyboard: dict, shots: list,
         last shot frame_idx + 1, or last cumulative duration.
     """
     if "num_frames" in storyboard:
-        return snap_frames(int(storyboard["num_frames"]))
+        return _snap_frames_at_least(int(storyboard["num_frames"]))
     if "duration_sec" in storyboard:
-        return snap_frames(max(9, round(float(storyboard["duration_sec"]) * frame_rate)))
+        return _snap_frames_at_least(max(9, round(float(storyboard["duration_sec"]) * frame_rate)))
 
     # Try sum of per-shot duration_sec (legacy)
     if all("duration_sec" in s for s in shots):
         total_sec = sum(float(s["duration_sec"]) for s in shots)
-        return snap_frames(max(9, round(total_sec * frame_rate)))
+        return _snap_frames_at_least(max(9, round(total_sec * frame_rate)))
 
     # Fallback: last keyframe position + 1 second of tail
     last = (max(positions) if positions else 0) + int(round(frame_rate))
-    return snap_frames(max(9, last))
+    return _snap_frames_at_least(max(9, last))
 
 
 def _build_keyframes(storyboard: dict, shot_images: List[str],
@@ -125,7 +133,7 @@ def _build_keyframes_for_segment(
             frame_idx=max(0, min(idx, total_frames - 1)),
             strength=float(shot.get("strength", default_strength)),
         ))
-    return keyframes, snap_frames(total_frames)
+    return keyframes, _snap_frames_at_least(total_frames)
 
 
 def _prompt_for_segment(storyboard: dict, shots: list) -> str:
@@ -168,6 +176,23 @@ def _concat_clips(clips: list[str], output_path: str, ffmpeg_path: Optional[str]
     if result.returncode != 0:
         raise RuntimeError(f"ffmpeg concat failed:\n{result.stderr}")
     return str(out)
+
+
+def _trim_clip(input_path: str, output_path: str, duration_sec: float,
+               ffmpeg_path: Optional[str] = None) -> str:
+    ffmpeg = _find_ffmpeg(ffmpeg_path)
+    Path(output_path).parent.mkdir(parents=True, exist_ok=True)
+    cmd = [
+        ffmpeg, "-y",
+        "-i", input_path,
+        "-t", f"{duration_sec:.6f}",
+        "-c", "copy",
+        output_path,
+    ]
+    result = subprocess.run(cmd, text=True, capture_output=True)
+    if result.returncode != 0:
+        raise RuntimeError(f"ffmpeg trim failed:\n{result.stderr}")
+    return output_path
 
 
 def _segment_groups(storyboard: dict, shot_images: List[str], frame_rate: float):
@@ -214,17 +239,20 @@ def _generate_segmented(
     segment_manifest = []
 
     for group_idx, group in enumerate(groups):
-        items = group["items"]
+        items = list(group["items"])
         start = items[0][3]
         if group_idx + 1 < len(groups):
             end = groups[group_idx + 1]["items"][0][3]
+            boundary_item = groups[group_idx + 1]["items"][0]
+            items_for_generation = items + [boundary_item]
         else:
             end = total_frames
-        local_positions = [max(0, item[3] - start) for item in items]
-        segment_frames = max(max(local_positions) + 1, end - start)
-        segment_frames = snap_frames(segment_frames)
-        segment_shots = [deepcopy(item[1]) for item in items]
-        segment_images = [item[2] for item in items]
+            items_for_generation = items
+        local_positions = [max(0, item[3] - start) for item in items_for_generation]
+        target_frames = max(1, end - start)
+        segment_frames = _snap_frames_at_least(max(max(local_positions) + 1, target_frames))
+        segment_shots = [deepcopy(item[1]) for item in items_for_generation]
+        segment_images = [item[2] for item in items_for_generation]
         for shot, local_idx in zip(segment_shots, local_positions):
             shot["resolved_frame_idx"] = local_idx
 
@@ -238,25 +266,32 @@ def _generate_segmented(
             segment_frames,
         )
         clip_path = str(clips_root / f"segment_{group_idx:02d}_id_{group['segment_id']:02d}.mp4")
+        raw_clip_path = str(clips_root / f"segment_{group_idx:02d}_id_{group['segment_id']:02d}_raw.mp4")
         model.generate(
             prompt=segment_prompt,
             keyframes=keyframes,
             num_frames=num_frames,
-            output_path=clip_path,
+            output_path=raw_clip_path,
             frame_rate=frame_rate,
             height=height,
             width=width,
             negative_prompt=negative_prompt,
             seed=seed,
         )
+        _trim_clip(raw_clip_path, clip_path, target_frames / frame_rate, ffmpeg_path=ffmpeg_path)
         clips.append(clip_path)
         segment_manifest.append({
             "segment_id": group["segment_id"],
             "clip": clip_path,
+            "raw_clip": raw_clip_path,
             "global_start_frame": start,
             "global_end_frame": end,
+            "target_frames": target_frames,
+            "generated_frames": num_frames,
             "local_frame_indices": local_positions,
             "shot_ids": [item[1].get("shot_id") for item in items],
+            "conditioning_shot_ids": [item[1].get("shot_id") for item in items_for_generation],
+            "uses_next_segment_boundary_keyframe": group_idx + 1 < len(groups),
         })
 
     storyboard["_segment_outputs"] = segment_manifest
