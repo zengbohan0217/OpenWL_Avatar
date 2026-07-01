@@ -121,8 +121,8 @@ class UEAvatarOperator:
     def retarget_motion(self, glb_path: str, rig_txt: str, motion_path: str, **kwargs):
         """Step 3b: Retarget a motion clip (Mixamo FBX / MoMask BVH) onto the rig.
 
-        Extra kwargs (output_path, source, mapping, mixamo_ref, fps,
-        export_anim_only, ...) are forwarded to
+        Extra kwargs (output_path, source, mapping, fps, export_anim_only, ...)
+        are forwarded to
         `funcs.retarget_motion.retarget_motion`.
         """
         if self.rigging_model is None:

@@ -1,5 +1,5 @@
 {
-  "description": "MoMask BVH (source) -> Puppeteer (target), direct retarget. Composed from momask_bvh_to_mixamo + luffi_puppeteer_ue_mixamo.",
+  "description": "MoMask BVH (source) -> Puppeteer (target), direct retarget.",
   "source_skeleton": "MoMask-BVH",
   "target_skeleton": "Puppeteer",
   "root_bones": {

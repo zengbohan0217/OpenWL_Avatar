@@ -282,10 +282,6 @@ class PuppeteerModel:
         output_fbx: str,
         mapping: Optional[str] = None,
         source: str = "mixamo",
-        mixamo_ref: Optional[str] = None,
-        bvh_mapping: Optional[str] = None,
-        momask_keemap_json: Optional[str] = None,
-        intermediate_fbx: Optional[str] = None,
         action_name: str = "Take 001",
         fps: int = 30,
         anim_only: bool = False,
@@ -307,14 +303,7 @@ class PuppeteerModel:
             mapping:      Source->Puppeteer bone-map JSON. Defaults per `source`:
                           mixamo -> luffi_puppeteer_ue_mixamo_mapping.json,
                           bvh    -> momask_bvh_to_puppeteer_mapping.json.
-            source:       "mixamo", "bvh" (direct, recommended), or
-                          "bvh_via_mixamo" (legacy two-step through a Mixamo rig).
-            mixamo_ref:   Only for "bvh_via_mixamo": a Mixamo bind-rig FBX used
-                          as the intermediate skeleton.
-            bvh_mapping:  BVH->Mixamo bone-map JSON for the legacy two-step path.
-            momask_keemap_json: Optional MoMask assets/mapping.json corrections
-                          (legacy two-step path).
-            intermediate_fbx: Where to write the intermediate FBX (two-step path).
+            source:       "mixamo" or "bvh" (direct).
             action_name:  UE-friendly take name.
             fps:          Output FPS (use 20 for MoMask).
             anim_only:    Export armature animation only (UE Existing Skeleton).
@@ -323,44 +312,23 @@ class PuppeteerModel:
             extra_args:   Extra CLI flags forwarded to the retarget module.
 
         Returns:
-            dict with keys {"output", "intermediate"} (intermediate is None
-            except for the legacy two-step path).
+            dict with keys {"output", "intermediate"} (intermediate is always None).
         """
         os.makedirs(os.path.dirname(os.path.abspath(output_fbx)) or ".", exist_ok=True)
 
-        source_anim = motion_path
-        intermediate = None
-
-        if source == "bvh_via_mixamo":
-            # Legacy: BVH -> Mixamo FBX -> Puppeteer (kept for reference/fallback).
-            if not mixamo_ref:
-                raise ValueError("source='bvh_via_mixamo' requires `mixamo_ref`.")
-            bvh_mapping = bvh_mapping or os.path.join(MAPPINGS_DIR, "momask_bvh_to_mixamo_mapping.json")
-            intermediate = intermediate_fbx or (os.path.splitext(output_fbx)[0] + "_mixamo_intermediate.fbx")
-            bvh_cmd = [
-                "-m", f"{RETARGET_PKG}.bvh_to_mixamo",
-                "--bvh", motion_path,
-                "--mixamo-ref", mixamo_ref,
-                "--mapping", bvh_mapping,
-                "--output", intermediate,
-                "--fps", str(fps),
-            ]
-            if momask_keemap_json:
-                bvh_cmd += ["--momask-keemap-json", momask_keemap_json]
-            self._run_bpy(bvh_cmd, expect_output=intermediate)
-            source_anim = intermediate
-            mapping = mapping or os.path.join(MAPPINGS_DIR, "luffi_puppeteer_ue_mixamo_mapping.json")
-        elif source == "bvh":
-            # Direct BVH -> Puppeteer (recommended).
+        if source == "bvh":
+            # Direct BVH -> Puppeteer.
             mapping = mapping or os.path.join(MAPPINGS_DIR, "momask_bvh_to_puppeteer_mapping.json")
-        else:  # mixamo
+        elif source == "mixamo":
             mapping = mapping or os.path.join(MAPPINGS_DIR, "luffi_puppeteer_ue_mixamo_mapping.json")
+        else:
+            raise ValueError(f"Unsupported retarget source: {source!r}. Use 'mixamo' or 'bvh'.")
 
         cmd = [
             "-m", f"{RETARGET_PKG}.world_delta",
             "--glb", glb_path,
             "--rig", rig_txt,
-            "--source-anim", source_anim,
+            "--source-anim", motion_path,
             "--mapping", mapping,
             "--output", output_fbx,
             "--action-name", action_name,
@@ -376,7 +344,7 @@ class PuppeteerModel:
         self._run_bpy(cmd, expect_output=output_fbx)
 
         print(f"[puppeteer] retarget done: {output_fbx}")
-        return {"output": output_fbx, "intermediate": intermediate}
+        return {"output": output_fbx, "intermediate": None}
 
     # ------------------------------------------------------------------
     # High-level convenience: mesh -> rigged FBX

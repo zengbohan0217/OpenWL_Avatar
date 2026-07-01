@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""World-delta Mixamo -> Puppeteer skeleton retargeting (Blender / bpy).
+"""World-delta source animation -> Puppeteer skeleton retargeting (Blender / bpy).
 
 Recommended retarget method. Applies each source bone's world-space rotation
 delta to the destination rest pose:
@@ -134,7 +134,7 @@ def import_source_animation(
 
 
 def import_mixamo_animation(path: str) -> Tuple[bpy.types.Object, bpy.types.Action]:
-    """Backwards-compatible alias for FBX/BVH source import."""
+    """Backwards-compatible alias for source animation import."""
     return import_source_animation(path)
 
 
@@ -470,7 +470,7 @@ def run(args: argparse.Namespace) -> None:
 
 def parse_args() -> argparse.Namespace:
     p = argparse.ArgumentParser(
-        description="World-delta Mixamo -> Puppeteer retarget."
+        description="World-delta source animation -> Puppeteer retarget."
     )
     p.add_argument("--glb", required=True, help="Target character GLB (textures preserved).")
     p.add_argument("--rig", required=True, help="Puppeteer rig txt (skeleton + skin weights).")

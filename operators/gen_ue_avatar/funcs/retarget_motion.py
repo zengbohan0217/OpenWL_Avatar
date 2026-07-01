@@ -12,8 +12,6 @@ Source types:
   - "bvh":            a BVH (e.g. MoMask), retargeted *directly* — the
                       world-delta math is independent of source bone roll, so
                       no Mixamo intermediate is needed.
-  - "bvh_via_mixamo": legacy two-step (BVH -> Mixamo FBX -> Puppeteer), kept as
-                      a fallback when a Mixamo bind rig is available.
 
 Input:
     glb_path    : str            — textured target character GLB
@@ -23,6 +21,7 @@ Input:
 
 Output:
     dict with keys {"output", "intermediate"} (+ "anim_only" if requested).
+    "intermediate" is always None because BVH is retargeted directly.
 """
 
 import os
@@ -40,9 +39,6 @@ def retarget_motion(
     output_path: Optional[str] = None,
     source: str = "mixamo",
     mapping: Optional[str] = None,
-    mixamo_ref: Optional[str] = None,
-    bvh_mapping: Optional[str] = None,
-    momask_keemap_json: Optional[str] = None,
     action_name: str = "Take 001",
     fps: int = 30,
     global_scale: float = 1.0,
@@ -60,12 +56,8 @@ def retarget_motion(
         model:           Loaded `PuppeteerModel` instance.
         output_path:     Output animated FBX (mesh + anim). Defaults to
                          `output/motion/<motion>_on_<char>.fbx`.
-        source:          "mixamo", "bvh" (direct, recommended), or
-                         "bvh_via_mixamo" (legacy two-step via Mixamo).
+        source:          "mixamo" or "bvh" (direct).
         mapping:         Source->Puppeteer bone-map JSON (bundled default per source).
-        mixamo_ref:      Only for `source="bvh_via_mixamo"`: a Mixamo bind-rig FBX.
-        bvh_mapping:     BVH->Mixamo bone-map JSON (legacy two-step).
-        momask_keemap_json: Optional MoMask assets/mapping.json corrections (legacy).
         action_name:     UE-friendly take name.
         fps:             Output FPS (use 20 for MoMask BVH).
         global_scale:    BVH import scale (reconcile BVH units with the rig).
@@ -92,9 +84,6 @@ def retarget_motion(
         output_fbx=output_path,
         mapping=mapping,
         source=source,
-        mixamo_ref=mixamo_ref,
-        bvh_mapping=bvh_mapping,
-        momask_keemap_json=momask_keemap_json,
         action_name=action_name,
         fps=fps,
         global_scale=global_scale,
@@ -106,17 +95,13 @@ def retarget_motion(
 
     if export_anim_only:
         anim_only_path = os.path.splitext(output_path)[0] + "_anim_only.fbx"
-        # Reuse the intermediate FBX from the legacy two-step path to avoid recompute.
         anim = model.retarget(
             glb_path=glb_path,
             rig_txt=rig_txt,
-            motion_path=(result["intermediate"] or motion_path),
+            motion_path=motion_path,
             output_fbx=anim_only_path,
             mapping=mapping,
-            source=("mixamo" if result["intermediate"] else source),
-            mixamo_ref=mixamo_ref,
-            bvh_mapping=bvh_mapping,
-            momask_keemap_json=momask_keemap_json,
+            source=source,
             action_name=action_name,
             fps=fps,
             global_scale=global_scale,

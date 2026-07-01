@@ -11,9 +11,8 @@ its own.
 Modules:
   - rig_io.py       : load Puppeteer rig `.txt`, build armature, skin weights,
                       import textured GLB, export FBX (from Puppeteer export.py).
-  - world_delta.py  : world-conjugation-delta retarget (Mixamo -> Puppeteer).
-  - bvh_to_mixamo.py: MoMask BVH -> Mixamo FBX (first step of the BVH workflow).
-  - mappings/       : bone-map JSONs.
+  - world_delta.py  : world-conjugation-delta retarget (FBX/BVH -> Puppeteer).
+  - mappings/       : direct source->Puppeteer bone-map JSONs.
 
 Run the scripts as modules so relative imports resolve, e.g.
 
